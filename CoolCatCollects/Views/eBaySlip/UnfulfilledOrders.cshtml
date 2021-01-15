@@ -1,0 +1,76 @@
+﻿@model CoolCatCollects.Ebay.Models.EbayOrdersListModel
+@{
+	ViewBag.Title = "UnfulfilledOrders";
+	Layout = "~/Views/Shared/_MinimalLayout.cshtml";
+}
+
+@section styles {
+	<link href="~/Content/bricklinkpartlist.css?v=2" rel="stylesheet" />
+	<link href="~/Content/checkbox.css" rel="stylesheet" />
+}
+
+@section scripts {
+	@Scripts.Render("~/bundles/jquery")
+	<script src="~/Scripts/checkbox.js"></script>
+}
+
+<h2>Unfulfilled eBay Orders: @DateTime.Now.ToString("dd/MM/yyyy")</h2>
+
+<table class="parts">
+	<thead>
+		<tr>
+			<th>Done</th>
+			<th>Image</th>
+			<th>Item</th>
+			<th>Q.</th>
+			<th>Price</th>
+			<th>Location</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var buyer in Model.Orders.GroupBy(x => x.BuyerName))
+		{
+			<tr class="titlerow ">
+				<td colspan="6" class="center border-top relative">
+					<strong class="pad">@buyer.Key</strong>
+					<a href="@Url.Action("CombinedSlip", new { orders = buyer.Select(x => x.OrderId).Aggregate((current, next) => current + "," + next) })" target="_blank" class="btn btn-primary right-out no-print">Slip ></a>
+				</td>
+			</tr>
+			foreach (var order in buyer)
+			{
+				<tr>
+					<td colspan="2">Order: <strong>@order.OrderId</strong></td>
+					<td colspan="2">
+						Subtotal: <strong>@order.PriceSubtotal</strong><br />
+						Date: <strong>@order.OrderDate.ToString("dd/MM/yyyy")</strong>
+					</td>
+					<td colspan="2"><strong>@order.ShippingMethod</strong></td>
+				</tr>
+				foreach (var item in order.Items)
+				{
+					<tr class="checkable">
+						<td>
+							<label class="check">
+								<input type="checkbox" />
+								<span></span>
+							</label>
+						</td>
+						<td>
+							<img src="@item.Image" class="image" />
+						</td>
+						<td>
+							@item.Name
+							@if (!item.Character.IsEmpty())
+							{
+								<br /><small>@item.Character</small>
+							}
+						</td>
+						<td class="font-xlarge">@item.Quantity</td>
+						<td class="center">@item.Cost</td>
+						<td></td>
+					</tr>
+				}
+			}
+		}
+	</tbody>
+</table>

@@ -1,0 +1,138 @@
+﻿@model CoolCatCollects.Bricklink.Models.OrderWithItemsModel
+
+@{
+	ViewBag.Title = "Parts List";
+	Layout = "~/Views/Shared/_MinimalLayout.cshtml";
+
+	var newItems = Model.Items.Where(x => x.Condition == "New");
+	var usedItems = Model.Items.Where(x => x.Condition == "Used");
+}
+
+@section styles {
+	<link href="~/Content/bricklinkpartlist.css?v=2" rel="stylesheet" />
+	<link href="~/Content/checkbox.css" rel="stylesheet" />
+}
+
+@section scripts {
+	@Scripts.Render("~/bundles/jquery")
+	<script src="~/Scripts/checkbox.js"></script>
+}
+
+<table class="top-table">
+	<tr>
+		<td><strong>@Model.UserName</strong></td>
+		<td>@Model.ShippingMethod</td>
+	</tr>
+	<tr>
+		<td><strong>@Model.Buyer.Name</strong></td>
+		<td>Order Total: £@Model.OrderTotal</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			Weight(g): <strong>@Model.Items.Sum(x => decimal.Parse(x.Weight) * x.Quantity)</strong>
+		</td>
+	</tr>
+	@if (!Model.OrderRemarks.IsEmpty())
+	{
+		<tr>
+			<td colspan="2">
+				@Model.OrderRemarks
+			</td>
+		</tr>
+	}
+</table>
+<hr />
+@if (Model.Messages.Any())
+{
+	<table class="wide">
+		@foreach (var message in Model.Messages)
+		{
+			<tr>
+				<td>@message.InOrOut</td>
+				<td>@message.Date</td>
+				<td class="center">@HttpUtility.HtmlDecode(message.Body)</td>
+			</tr>
+		}
+	</table>
+	<hr />
+}
+<table class="parts">
+	<thead>
+		<tr>
+			<th>Done</th>
+			<th>Image</th>
+			<th>Cond.</th>
+			<th>Colour</th>
+			<th>Remark</th>
+			<th>Item</th>
+			<th>Wt.</th>
+			<th>Q.</th>
+			<th>Price</th>
+			<th>Total</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (newItems.Any())
+		{
+			<tr>
+				<td colspan="10" class="center border-top">
+					<strong>New Items</strong>
+				</td>
+			</tr>
+			foreach (var item in newItems)
+			{
+				@row(item)
+			}
+		}
+		@if (usedItems.Any())
+		{
+			<tr>
+				<td colspan="10" class="center border-top">
+					<strong>Used Items</strong>
+				</td>
+			</tr>
+			foreach (var item in usedItems)
+			{
+				@row(item)
+			}
+		}
+	</tbody>
+</table>
+<hr />
+
+
+@helper row(CoolCatCollects.Bricklink.Models.OrderItemModel item)
+{
+	<tr data-invid="@item.InventoryId" class="checkable">
+		<td class="center">
+			<label class="check">
+				<input type="checkbox" />
+				<span></span>
+			</label>
+		</td>
+		<td class="center image"><img src="@item.Image" /></td>
+		<td class="center">@item.Condition</td>
+		@if (!string.IsNullOrEmpty(item.Colour) && item.Colour != "(Not Applicable)")
+		{
+			<td class="center">@item.Colour</td>
+		}
+		<td class="center" @if (string.IsNullOrEmpty(item.Colour) || item.Colour == "(Not Applicable)") { <text> colspan="2" </text> }>
+			<strong>@item.Remarks</strong>
+		</td>
+		<td class="nopad">
+			@item.Name
+			@if (!string.IsNullOrWhiteSpace(item.Description))
+			{
+				<br />
+				<small>@HttpUtility.HtmlDecode(item.Description.Trim())</small>
+			}
+		</td>
+		<td class="center">@item.Weight</td>
+		<td class="center q">
+			@item.Quantity
+			<div class="remaining">(@item.ItemsRemaining)</div>
+		</td>
+		<td class="center">£@item.UnitPrice</td>
+		<td class="center">£@item.TotalPrice</td>
+	</tr>
+}

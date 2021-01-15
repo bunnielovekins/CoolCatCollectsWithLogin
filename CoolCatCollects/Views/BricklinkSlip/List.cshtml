@@ -1,0 +1,150 @@
+﻿@model CoolCatCollects.Bricklink.Models.OrdersModel
+@{
+	ViewBag.Title = "Paid Bricklink Orders";
+}
+
+<h2>List of Bricklink Orders - @Model.Status</h2>
+
+<form>
+	<table>
+		<thead>
+			<tr>
+				<th>Status</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>
+					<select name="status" class="form-control">
+						<option @if (Model.Status.ToUpper() == "Pending".ToUpper()) { <text> selected</text> }>Pending</option>
+						<option @if (Model.Status.ToUpper() == "Updated".ToUpper()) { <text> selected</text> }>Updated</option>
+						<option @if (Model.Status.ToUpper() == "Processing".ToUpper()) { <text> selected</text> }>Processing</option>
+						<option @if (Model.Status.ToUpper() == "Ready".ToUpper()) { <text> selected</text> }>Ready</option>
+						<option @if (Model.Status.ToUpper() == "Paid".ToUpper()) { <text> selected</text> }>Paid</option>
+						<option @if (Model.Status.ToUpper() == "Packed".ToUpper()) { <text> selected</text> }>Packed</option>
+						<option @if (Model.Status.ToUpper() == "Shipped".ToUpper()) { <text> selected</text> }>Shipped</option>
+						<option @if (Model.Status.ToUpper() == "Received".ToUpper()) { <text> selected</text> }>Received</option>
+						<option @if (Model.Status.ToUpper() == "Completed".ToUpper()) { <text> selected</text> }>Completed</option>
+						<option @if (Model.Status.ToUpper() == "Cancelled".ToUpper()) { <text> selected</text> }>Cancelled</option>
+					</select>
+				</td>
+				<td>
+					<input type="submit" value="Go" class="btn btn-primary" />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form>
+
+@if (Model.Orders.Any())
+{
+	var groups = Model.Orders.GroupBy(x => x.DayToGoOut);
+	<table class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>Order Id</th>
+				<th>Total Pieces</th>
+				<th>Unique Pieces</th>
+				<th>Update Date</th>
+				<th>Username</th>
+				<th>Real Name</th>
+				<th>Total</th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var group in groups)
+			{
+				if (Model.Status.ToUpper() == "Paid".ToUpper())
+				{
+					<tr><td colspan="9"><h4>@group.Key.ToString()</h4></td></tr>
+				}
+				foreach (var order in group)
+				{
+					<tr>
+						<td>@order.OrderId</td>
+						<td>@order.TotalPieces</td>
+						<td>@order.UniquePieces</td>
+						<td>@order.DateStatusChanged.ToString("MM/dd HH:mm")</td>
+						<td>@order.Username</td>
+						<td class="js-name">@(string.IsNullOrEmpty(order.RealName) ? "Loading..." : order.RealName)</td>
+						<td>@order.Total</td>
+						<td>
+							@Html.ActionLink("Parts List", "PartsList", new { orderId = order.OrderId }, new { target = "_blank", @class = GetLinkClass(order) })
+							<span class="@GetLoadedClass(order)" data-id="@order.Id" data-orderid="@order.OrderId">Loading...</span>
+						</td>
+						<td>
+							@Html.ActionLink("Packing Slip", "PackingSlip", new { orderId = order.OrderId }, new { target = "_blank", @class = GetLinkClass(order) })
+							<span class="@GetLoadedClass2(order)">Loading...</span>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+	</table>
+}
+else
+{
+	<h3>No Orders Found!</h3>
+}
+
+@section scripts{
+
+	<script>
+		$(function () {
+			loadOrders($('.js-load-order'));
+		});
+
+		async function* asyncfunction(elems) {
+			for (let i = 0; i < elems.length; i++) {
+				yield loadOrder(elems[i]);
+			}
+		}
+
+		async function loadOrders(elems) {
+			for await (let i of asyncfunction(elems)) {
+			}
+		}
+
+		function loadOrder(elem) {
+			return new Promise((resolve, reject) => {
+				var span = $(elem);
+				var tr = span.parents('tr');
+				var nameField = tr.find('.js-name');
+				var id = span.attr('data-id');
+				var orderId = span.attr('data-orderid');
+
+				$.get('@Url.Action("LoadOrder", "BricklinkSlip")?id=' + id + '&orderId=' + orderId, response => {
+					tr.find('.loading').addClass('hidden');
+					tr.find('a.hidden').removeClass('hidden');
+
+					nameField.text(response.name);
+
+					resolve();
+				});
+			});
+		};
+	</script>
+
+}
+
+@functions{
+
+	string GetLinkClass(CoolCatCollects.Bricklink.Models.OrderModel order)
+	{
+		return !order.OrderIsLoaded ? "hidden" : "";
+	}
+
+	string GetLoadedClass(CoolCatCollects.Bricklink.Models.OrderModel order)
+	{
+		return order.OrderIsLoaded ? "hidden" : "js-load-order loading";
+	}
+
+	string GetLoadedClass2(CoolCatCollects.Bricklink.Models.OrderModel order)
+	{
+		return order.OrderIsLoaded ? "hidden" : "loading";
+	}
+
+}

@@ -1,0 +1,196 @@
+﻿
+@{
+	ViewBag.Title = "Inventory";
+}
+
+@section scripts{
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+	<script src="~/Scripts/Inventory.js"></script>
+}
+
+<h1>Inventory</h1>
+
+<p>For database queries. If it isn't here, it may be in Bricklink.</p>
+
+@using (Html.BeginForm("GetByHistory", "Inventory"))
+{
+	<div class="form-horizontal">
+		<div class="form-group">
+			<div class="col-md-4">
+				<div class="input-group">
+					<input type="text" name="location" placeholder="Search by current location" class="form-control" />
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="submit">Go</button>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+<h2>Sanity Checker</h2>
+
+<div ng-app="inventoryApp">
+	<div ng-controller="InventoryController">
+		<table ng-show="DuplicateInventoryItems.length" class="table">
+			<thead>
+				<tr>
+					<td colspan="8">
+						<h4 class="f-left">Duplicate Inventory Items</h4>
+					</td>
+					<td colspan="1">
+						<button class="btn btn-primary" ng-click="FixDuplicateItems()" ng-hide="InvItemsLoading">Fix</button>
+						<button class="btn btn-primary" ng-show="InvItemsLoading" disabled>Fixing...</button>
+					</td>
+				</tr>
+				<tr>
+					<th>Image</th>
+					<th>Inv Id</th>
+					<th>Name</th>
+					<th>Number</th>
+					<th>Colour</th>
+					<th>Cond</th>
+					<th>Location</th>
+					<th>Last Updated</th>
+					<th>Number of Duplicates</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="item in DuplicateInventoryItems">
+				<tr>
+					<td><img ng-src="{{item.Inventory.Image}}" /></td>
+					<td>{{item.Inventory.InventoryId}}</td>
+					<td>{{item.Inventory.Name}}</td>
+					<td>{{item.Inventory.Number}}</td>
+					<td>{{item.Inventory.ColourName}}</td>
+					<td>{{item.Inventory.Condition}}</td>
+					<td>{{item.Inventory.Location}}</td>
+					<td>{{ShowDate(item.Inventory.LastUpdated)}}</td>
+					<td>{{item.Ids.length}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div ng-hide="DuplicateInventoryItems.length">
+			<h5>No duplicate inventory items found</h5>
+		</div>
+
+		<table ng-show="DuplicateParts.length" class="table">
+			<thead>
+				<tr>
+					<td colspan="4">
+						<h4 class="f-left">Duplicate Parts</h4>
+					</td>
+					<td colspan="1">
+						<button class="btn btn-primary" ng-click="FixDuplicateParts()" ng-hide="PartsLoading">Fix</button>
+						<button class="btn btn-primary" ng-show="PartsLoading" disabled>Fixing...</button>
+					</td>
+				</tr>
+				<tr>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Number</th>
+					<th>Type</th>
+					<th>Number of Duplicates</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="item in DuplicateParts">
+				<tr>
+					<td><img ng-src="{{item.image}}" /></td>
+					<td>{{item.name}}</td>
+					<td>{{item.number}}</td>
+					<td>{{item.type}}</td>
+					<td>{{item.count}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div ng-hide="DuplicateParts.length">
+			<h5>No duplicate parts found</h5>
+		</div>
+
+		<table ng-show="DuplicateOrders.length" class="table">
+			<thead>
+				<tr>
+					<td colspan="4">
+						<h4 class="f-left">Duplicate Orders</h4>
+					</td>
+					<td colspan="1">
+						<button class="btn btn-primary" ng-click="FixDuplicateOrders()" ng-hide="OrdersLoading">Fix</button>
+						<button class="btn btn-primary" ng-show="OrdersLoading" disabled>Fixing...</button>
+					</td>
+				</tr>
+				<tr>
+					<th>Order Id</th>
+					<th>Buyer Name</th>
+					<th>Buyer Email</th>
+					<th>Order Items</th>
+					<th>Number of Duplicates</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="item in DuplicateOrders">
+				<tr>
+					<td>{{item.orderid}}</td>
+					<td>{{item.name}}</td>
+					<td>{{item.email}}</td>
+					<td>{{item.items}}</td>
+					<td>{{item.count}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div ng-hide="DuplicateOrders.length">
+			<h5>No duplicate orders found</h5>
+		</div>
+
+		<div ng-show="OldInventoryCount">
+			<h4>Found {{OldInventoryCount}} inventory items more than a month old!</h4>
+			<button class="btn btn-primary" ng-click="FixOldInventory()" ng-hide="OldInvLoading">Fix</button>
+			<button class="btn btn-primary" ng-show="OldInvLoading" disabled>Fixing...</button>
+		</div>
+
+		<div ng-hide="OldInventoryCount">
+			<h5>No inventory older than a month</h5>
+		</div>
+
+		<table ng-show="DuplicateInventoryLocations.length" class="table">
+			<thead>
+				<tr>
+					<td colspan="8">
+						<h4 class="f-left">Duplicate Inventory Locations</h4>
+					</td>
+				</tr>
+				<tr>
+					<th>Image</th>
+					<th>Inventory Id</th>
+					<th>Name</th>
+					<th>Number</th>
+					<th>Type</th>
+					<th>Colour</th>
+					<th>Condition</th>
+					<th>Quantity</th>
+					<th>Last Updated</th>
+				</tr>
+			</thead>
+			<tbody ng-repeat="location in DuplicateInventoryLocations">
+				<tr>
+					<td colspan="8">{{location.location}}</td>
+				</tr>
+				<tr ng-repeat="item in location.items">
+					<td><img ng-src="{{item.Image}}" /></td>
+					<td>{{item.InventoryId}}</td>
+					<td>{{item.Name}}</td>
+					<td>{{item.Number}}</td>
+					<td>{{item.ItemType}}</td>
+					<td>{{item.ColourName}}</td>
+					<td>{{item.Condition}}</td>
+					<td>{{item.Quantity}}</td>
+					<td>{{ShowDate(item.LastUpdated)}}</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div ng-hide="DuplicateInventoryLocations.length">
+			<h5>No duplicate orders found</h5>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,236 @@
+﻿@model CoolCatCollects.Bricklink.Models.SubsetPartsListModel
+
+@section styles {
+	<link href="~/Content/checkbox.css" rel="stylesheet" />
+	<style>
+		.qty, #setQty {
+			width: 50px;
+		}
+
+		.price {
+			width: 80px;
+		}
+	</style>
+}
+
+@{
+	int i = 0;
+	string set = Request.QueryString["set"];
+	ViewBag.Title = "Part Out Set " + set;
+
+	var partsWithRemarks = Model.Parts.Where(x => !x.Remark.IsEmpty());
+	var partsWithRemarksCount = partsWithRemarks.Count();
+	var partsPages = partsWithRemarks
+		.Select((val, index) => new { page = index / 190, val })
+		.GroupBy(x => x.page, x => x.val);
+
+}
+
+<h1>@ViewBag.Title</h1>
+
+<strong>Number of sets:</strong>
+<label for="setQty">
+	<input type="text" class="form-control" id="setQty" value="1" />
+</label>
+<button type="button" class="btn btn-default" id="setQtyApply">Apply</button>
+
+<br />
+
+@foreach (var page in partsPages)
+{
+	var remarkStr = page.Select(x => x.Remark).Aggregate((current, next) => current + "," + next);
+	<a href="@Url.Action("ExportRemarks", new { set = set, page = page.Key, remarks = remarkStr })"
+	   download target="_blank" class="btn btn-primary">Print Remarks - Page @(page.Key + 1)</a>
+}
+
+<br />
+<br />
+
+<button class="btn btn-success" data-toggle="modal" data-target="#resume-dialog">Resume</button>
+
+<br />
+<br />
+
+<button class="btn btn-warning js-reorder">Reorder table</button>
+
+@using (Html.BeginForm("ExportXmlDownload", "BricklinkCatalog", new { action = "POST" }))
+{
+	<table class="partstable table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th>Include</th>
+				<th>Image</th>
+				<th>Name</th>
+				<th>Number</th>
+				<th>Type</th>
+				<th></th>
+				<th>Colour</th>
+				<th>Qty</th>
+				<th>Remark</th>
+				<th>My Price</th>
+				<th>Avg Price</th>
+				<th>Weight</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var part in Model.Parts)
+			{
+				<tr class="part" data-i="@i" data-colour="@part.ColourId" data-number="@part.Number" data-type="@part.Type"
+					data-status="@part.Status" data-colourname="@part.ColourName">
+					<input type="hidden" name="items[@i].CONDITION" value="N" />
+					<input type="hidden" name="items[@i].ITEMTYPE" value="@ItemTypeToCharacter(part.Type)" data-field="itemType" />
+					<input type="hidden" name="items[@i].CATEGORY" value="@part.Category" data-field="category" />
+					<input type="hidden" name="items[@i].COLOR" value="@part.ColourId" data-field="colour" />
+					<input type="hidden" name="items[@i].ITEMID" value="@part.Number" data-field="itemId" />
+					<td class="checkable">
+						<label class="check">
+							<input type="checkbox" name="items[@i].INCLUDE" @if (Check(part)) { <text> checked="checked" </text> } data-field="check" />
+							<span></span>
+						</label>
+					</td>
+					<td class="checkable"><img src="@part.Image" /></td>
+					<td class="name @if(!CanBeBrokenDown(part)){ <text>checkable</text> }">
+						@HttpUtility.HtmlDecode(part.Name)
+						@if (!string.IsNullOrEmpty(part.Status))
+						{
+							<br /><small title="CP = Complementary. Alt = Alternative">(@part.Status)</small>
+						}
+						@if (CanBeBrokenDown(part))
+						{
+							<br />
+							<button class="btn btn-warning f-right js-break" data-number="@part.Number" data-colour="@part.ColourId"
+									data-type="@part.Type" data-qty="@part.Quantity">
+								Break it down
+							</button>
+						}
+					</td>
+					<td class="no checkable">@part.Number</td>
+
+					<td class="type checkable">@part.Type</td>
+					@if (part.Colour != null)
+					{
+						<td class="colour checkable" title="@part.ColourName"><span class="colbox" style="background-color: #@part.Colour.ColourCode; color: #@part.Colour.ColourCode;">&nbsp;</span></td>
+						<td class="colourname checkable" style="white-space: nowrap;">
+							@part.ColourName
+						</td>
+					}
+					else
+					{
+						<td class="colour checkable"></td>
+						<td class="colourname checkable"></td>
+					}
+
+					<td><input class="form-control qty" type="text" name="items[@i].QTY" value="@part.Quantity" data-val="@part.Quantity" data-field="qty" /></td>
+					<td><input class="form-control remark" type="text" name="items[@i].REMARKS" value="@part.Remark" data-val="@part.Remark" data-field="remark" /></td>
+					<td><input class="form-control price" type="text" name="items[@i].pricestr" value="@part.MyPrice" data-val="@part.MyPrice" data-field="price" /></td>
+					<td class="avgprice">@part.AveragePrice</td>
+					<td class="js-weight" data-href="@Url.Action("GetWeight", "BricklinkCatalog", new { num = part.Number, type = part.Type })">Loading...</td>
+				</tr>
+
+				i++;
+			}
+		</tbody>
+	</table>
+
+	<button type="submit" class="btn btn-warning js-export-file" data-href="@Url.Action("ExportXmlDownload", "BricklinkCatalog")">Export for later</button>
+	<br/>
+	<br/>
+
+	<div class="clear">
+		<button class="btn btn-primary js-export-copy" data-href="@Url.Action("ExportXmlDownload", "BricklinkCatalog")">Export for Bricklink</button>
+
+		<a href="https://www.bricklink.com/invXML.asp" target="_blank" id="bl" class="f-right btn btn-warning" style="display: none;">Bricklink</a>
+		<button type="button" id="copy" class="f-right btn btn-default" style="display: none;"><span class="glyphicon glyphicon-copy"></span>&nbsp;Copy</button>
+
+		<br />
+		<textarea id="output" class="form-control" style="width: 100%; display: none;"></textarea>
+	</div>
+}
+
+
+
+<br />
+<br />
+<div>IMPORT INTO BRICKLINK FIRST!</div>
+<a href="@Url.Action("PartsByRemark", new { set = Request.QueryString["set"] })" target="_blank" class="btn btn-primary">Parts by remark</a>
+
+<br />
+<br />
+
+<button type="button" class="btn btn-success" id="updateDb">I have finished my upload, now update the database!</button>
+
+<div class="modal fade" id="resume-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Resume</h4>
+			</div>
+			<div class="modal-body">
+				<input type="file" accept=".xml" id="resumeInput" />
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-primary js-resume-upload disabled" disabled>Resume</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+@functions{
+
+	string ItemTypeToCharacter(string str)
+	{
+		switch (str)
+		{
+			case "SET":
+				return "S";
+			case "PART":
+				return "P";
+			case "MINIFIG":
+				return "M";
+			case "INSTRUCTIONS":
+				return "I";
+		}
+
+
+		return str.ToUpper().Substring(0, 1);
+	}
+
+	bool Check(CoolCatCollects.Bricklink.Models.SubsetPartModel part)
+	{
+		if (part.Type != "PART")
+		{
+			return false;
+		}
+		if (!string.IsNullOrEmpty(part.Status))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	bool CanBeBrokenDown(CoolCatCollects.Bricklink.Models.SubsetPartModel part)
+	{
+		if (part.Type == "MINIFIG" || part.Type == "SET")
+		{
+			return true;
+		}
+		if (part.Name.ToLower().Contains("multipack"))
+		{
+			return true;
+		}
+		return false;
+	}
+
+}
+
+@section scripts
+{
+	<script>
+		var updateDbUrl = '@Url.Action("UpdateDatabase", "BricklinkCatalog")';
+		var subsetUrl = '@Url.Action("GetSubset", "BricklinkCatalog")';
+	</script>
+	<script src="~/Scripts/checkbox.js"></script>
+	<script src="~/Scripts/NewSetExport.js"></script>
+}

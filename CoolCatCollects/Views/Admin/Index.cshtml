@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="jumbotron">
+    <img src="~/Content/logo.png" style="float:right" />
+    <h1>Cool Cat Collects</h1>
+    <p class="lead">Pick what you want to do below</p>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h2>Bricklink Postage Export</h2>
+        <p><a class="btn btn-default" href="@Url.Action("List", "BricklinkPostage")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Bricklink Orders</h2>
+        <p><a class="btn btn-default" href="@Url.Action("List", "BricklinkSlip")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>eBay Orders</h2>
+        <p><a class="btn btn-default" href="@Url.Action("List", "eBaySlip")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Postage</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Postage")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Part Out Set</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "BricklinkCatalog")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Database</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Database")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Logs</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Logs")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>New Purchases</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "NewPurchases")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Used Purchases</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "UsedPurchases")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Expenses</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Expenses")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Inventory</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "Inventory")">Go</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Listing Generator</h2>
+        <p><a class="btn btn-default" href="@Url.Action("Index", "ListingGenerator")">Go</a></p>
+    </div>
+</div>
