@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CoolCatCollects.Data.Repositories
 {
-	public class InfoRepository : BaseRepository<Info>
+	public class InfoRepository : BaseRepository<Info>, IInfoRepository
 	{
 		public InfoRepository(EfContext context) : base(context)
 		{

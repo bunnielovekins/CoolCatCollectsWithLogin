@@ -8,14 +8,14 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-	public class UsedPurchasesController : BaseController
+	public class UsedPurchasesController : Controller
 	{
-		private UsedPurchaseService _service;
+		private IUsedPurchaseService _service;
 		private const string _bindAll = "Id,Date,Source,SourceUsername,OrderNumber,Price,PaymentMethod,Receipt,DistanceTravelled,Location,Postage,Weight,PricePerKilo,CompleteSets,Notes";
 
-		public UsedPurchasesController()
+		public UsedPurchasesController(IUsedPurchaseService service)
 		{
-			_service = new UsedPurchaseService(DbContext);
+			_service = service;
 		}
 
 		// GET: UsedPurchases

@@ -1,6 +1,5 @@
 ﻿using CoolCatCollects.Bricklink.Models;
 using CoolCatCollects.Bricklink.Models.Responses;
-using CoolCatCollects.Data;
 using CoolCatCollects.Data.Entities;
 using CoolCatCollects.Data.Repositories;
 using System.Collections.Generic;
@@ -8,14 +7,14 @@ using System.Linq;
 
 namespace CoolCatCollects.Bricklink
 {
-	public class ColourService
+	public class ColourService : IColourService
 	{
 		private static Dictionary<int, ColourModel> _colours;
-		private readonly BaseRepository<Colour> _repo;
+		private readonly IBaseRepository<Colour> _repo;
 
-		public ColourService(EfContext context)
+		public ColourService(IBaseRepository<Colour> repo)
 		{
-			_repo = new BaseRepository<Colour>(context);
+			_repo = repo;
 		}
 
 		/// <summary>
@@ -42,8 +41,6 @@ namespace CoolCatCollects.Bricklink
 
 			return colours.Select(x => new ColourModel(x));
 		}
-
-
 
 		public Dictionary<int, ColourModel> Colours
 		{

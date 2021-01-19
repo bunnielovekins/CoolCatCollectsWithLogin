@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace CoolCatCollects.Data.Repositories
 {
-	public class PartInventoryRepository : BaseRepository<PartInventory>
+	public class PartInventoryRepository : BaseRepository<PartInventory>, IPartInventoryRepository
 	{
 		public PartInventoryRepository(EfContext context) : base(context)
 		{
@@ -90,7 +90,7 @@ namespace CoolCatCollects.Data.Repositories
 
 		public void CascadeDelete(PartInventory entity)
 		{
-			foreach(var hist in entity.LocationHistory)
+			foreach (var hist in entity.LocationHistory)
 			{
 				var hist1 = _ctx.PartInventoryLocationHistorys.Find(hist.Id);
 				_ctx.PartInventoryLocationHistorys.Remove(hist1);

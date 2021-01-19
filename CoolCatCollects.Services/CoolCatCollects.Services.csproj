@@ -48,6 +48,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpensesService.cs" />
+    <Compile Include="Interfaces\INewPurchaseService.cs" />
+    <Compile Include="Interfaces\ILogService.cs" />
+    <Compile Include="Interfaces\IExpensesService.cs" />
+    <Compile Include="Interfaces\IUsedPurchaseService.cs" />
+    <Compile Include="Interfaces\IWordExportService.cs" />
     <Compile Include="LogService.cs" />
     <Compile Include="NewPurchaseService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

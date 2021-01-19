@@ -4,14 +4,14 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-    [Authorize]
-	public class BricklinkSlipController : BaseController
+	[Authorize]
+	public class BricklinkSlipController : Controller
 	{
-		private readonly BricklinkService _service;
+		private readonly IBricklinkService _service;
 
-		public BricklinkSlipController()
+		public BricklinkSlipController(IBricklinkService service)
 		{
-			_service = new BricklinkService(DbContext);
+			_service = service;
 		}
 
 		public ActionResult Index()

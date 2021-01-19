@@ -1,12 +1,20 @@
 ﻿using CoolCatCollects.Bricklink;
 using CoolCatCollects.Models;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 
 namespace CoolCatCollects.Controllers
 {
-	public class InventoryController : BaseController
+	public class InventoryController : Controller
 	{
+		private readonly IBricklinkService _service;
+		private readonly IBricklinkInventorySanityCheckService _sanityService;
+
+		public InventoryController(IBricklinkService service, IBricklinkInventorySanityCheckService sanityService)
+		{
+			_service = service;
+			_sanityService = sanityService;
+		}
+
 		// GET: Inventory
 		public ActionResult Index()
 		{
@@ -15,9 +23,7 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetByHistory(string location)
 		{
-			var service = new BricklinkService(DbContext);
-
-			var locations = service.GetHistoriesByLocation(location);
+			var locations = _service.GetHistoriesByLocation(location);
 
 			var model = new LocationHistoryModel();
 			model.AddRange(locations);
@@ -35,18 +41,14 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetDuplicateInventoryItems()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var duplicateInventories = service.GetDuplicateInventoryItems();
+			var duplicateInventories = _sanityService.GetDuplicateInventoryItems();
 
 			return Json(duplicateInventories, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult FixDuplicateInventoryItems()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var results = service.FixDuplicateInventoryItems();
+			var results = _sanityService.FixDuplicateInventoryItems();
 
 			return Json(results, JsonRequestBehavior.AllowGet);
 		}
@@ -56,18 +58,14 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetDuplicateParts()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var duplicateParts = service.GetDuplicateParts();
+			var duplicateParts = _sanityService.GetDuplicateParts();
 
 			return Json(duplicateParts, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult FixDuplicateParts()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			service.FixDuplicateParts();
+			_sanityService.FixDuplicateParts();
 
 			return Json(true, JsonRequestBehavior.AllowGet);
 		}
@@ -77,18 +75,14 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetDuplicateOrders()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var duplicateParts = service.GetDuplicateOrders();
+			var duplicateParts = _sanityService.GetDuplicateOrders();
 
 			return Json(duplicateParts, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult FixDuplicateOrders()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			service.FixDuplicateOrders();
+			_sanityService.FixDuplicateOrders();
 
 			return Json(true, JsonRequestBehavior.AllowGet);
 		}
@@ -98,9 +92,7 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetDuplicateInventoryLocations()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var duplicateLocations = service.GetDuplicateInventoryLocations();
+			var duplicateLocations = _sanityService.GetDuplicateInventoryLocations();
 
 			return Json(duplicateLocations, JsonRequestBehavior.AllowGet);
 		}
@@ -110,18 +102,14 @@ namespace CoolCatCollects.Controllers
 
 		public ActionResult GetOldInventory()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var oldInventory = service.GetOldInventory();
+			var oldInventory = _sanityService.GetOldInventory();
 
 			return Json(oldInventory, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult FixOldInventory()
 		{
-			var service = new BricklinkInventorySanityCheckService(DbContext);
-
-			var oldInventory = service.FixOldInventory();
+			var oldInventory = _sanityService.FixOldInventory();
 
 			return Json(oldInventory, JsonRequestBehavior.AllowGet);
 		}

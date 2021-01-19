@@ -3,7 +3,7 @@ using Xceed.Words.NET;
 
 namespace CoolCatCollects.Services
 {
-	public class WordExportService
+	public class WordExportService : IWordExportService
 	{
 		public string ExportRemarks(string[] allRemarks, string set, string path, int page)
 		{

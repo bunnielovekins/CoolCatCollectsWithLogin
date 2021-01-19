@@ -1,5 +1,4 @@
-﻿using CoolCatCollects.Data;
-using CoolCatCollects.Data.Entities.Purchases;
+﻿using CoolCatCollects.Data.Entities.Purchases;
 using CoolCatCollects.Data.Repositories;
 using CoolCatCollects.Models;
 using System;
@@ -9,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace CoolCatCollects.Services
 {
-	public class NewPurchaseService : IDisposable
+	public class NewPurchaseService : IDisposable, INewPurchaseService
 	{
-		public BaseRepository<NewPurchase> _repo;
+		public IBaseRepository<NewPurchase> _repo;
 
-		public NewPurchaseService(EfContext context)
+		public NewPurchaseService(IBaseRepository<NewPurchase> repo)
 		{
-			_repo = new BaseRepository<NewPurchase>(context);
+			_repo = repo;
 		}
 
 		public async Task<IEnumerable<NewPurchaseModel>> GetAll()

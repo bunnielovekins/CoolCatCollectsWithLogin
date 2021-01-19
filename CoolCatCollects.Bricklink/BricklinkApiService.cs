@@ -12,11 +12,11 @@ namespace CoolCatCollects.Bricklink
 	/// <summary>
 	/// Wrapper for sending requests to Bricklink API
 	/// </summary>
-	public class BricklinkApiService
+	public class BricklinkApiService : IBricklinkApiService
 	{
-		private readonly ColourService _colourService;
+		private readonly IColourService _colourService;
 
-		public BricklinkApiService(ColourService colourService)
+		public BricklinkApiService(IColourService colourService)
 		{
 			_colourService = colourService;
 		}

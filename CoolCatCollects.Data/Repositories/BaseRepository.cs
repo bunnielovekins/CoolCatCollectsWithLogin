@@ -8,11 +8,9 @@ using System.Threading.Tasks;
 
 namespace CoolCatCollects.Data.Repositories
 {
-	public class BaseRepository<T> : IDisposable where T : BaseEntity
+	public class BaseRepository<T> : IDisposable, IBaseRepository<T> where T : BaseEntity
 	{
 		protected EfContext _ctx;
-
-		public EfContext Context { get => _ctx; }
 
 		public BaseRepository(EfContext context)
 		{

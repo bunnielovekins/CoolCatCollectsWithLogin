@@ -1,6 +1,5 @@
 ﻿using CoolCatCollects.Bricklink.Models;
 using CoolCatCollects.Core;
-using CoolCatCollects.Data;
 using CoolCatCollects.Data.Entities;
 using CoolCatCollects.Data.Repositories;
 using System;
@@ -12,27 +11,26 @@ namespace CoolCatCollects.Bricklink
 	/// <summary>
 	/// Service to deal with BL-related DB tables
 	/// </summary>
-	public class BricklinkDataService
+	public class BricklinkDataService : IBricklinkDataService
 	{
-		private readonly BaseRepository<Part> _partrepo;
-		private readonly PartInventoryRepository _partInventoryRepo;
-		private readonly BaseRepository<PartPriceInfo> _partPricingRepo;
-		private readonly OrderRepository _orderRepo;
-		private readonly BricklinkApiService _api;
-		private readonly BaseRepository<PartInventoryLocationHistory> _historyRepo;
-		private readonly ColourService _colourService;
+		private readonly IBaseRepository<Part> _partrepo;
+		private readonly IPartInventoryRepository _partInventoryRepo;
+		private readonly IBaseRepository<PartPriceInfo> _partPricingRepo;
+		private readonly IOrderRepository _orderRepo;
+		private readonly IBricklinkApiService _api;
+		private readonly IBaseRepository<PartInventoryLocationHistory> _historyRepo;
+		private readonly IColourService _colourService;
 
-		public BricklinkDataService(EfContext context)
+		public BricklinkDataService(IPartInventoryRepository partInventoryRepo, IBaseRepository<Part> partrepo, IBaseRepository<PartPriceInfo> partPricingRepo,
+			IOrderRepository orderRepo, IBricklinkApiService api, IBaseRepository<PartInventoryLocationHistory> historyRepo, IColourService colourService)
 		{
-			_partInventoryRepo = new PartInventoryRepository(context);
-			_partrepo = new BaseRepository<Part>(context);
-			_partPricingRepo = new BaseRepository<PartPriceInfo>(context);
-			_historyRepo = new BaseRepository<PartInventoryLocationHistory>(context);
-			_colourService = new ColourService(context);
-
-			_orderRepo = new OrderRepository(context);
-
-			_api = new BricklinkApiService(_colourService);
+			_partInventoryRepo = partInventoryRepo;
+			_partrepo = partrepo;
+			_partPricingRepo = partPricingRepo;
+			_historyRepo = historyRepo;
+			_colourService = colourService;
+			_orderRepo = orderRepo;
+			_api = api;
 		}
 
 		public Order GetOrder(int orderId)
@@ -376,7 +374,7 @@ namespace CoolCatCollects.Bricklink
 			inv.Location = model.remarks;
 			inv.LastUpdated = DateTime.Now;
 
-			
+
 
 			//var inv = new PartInventory
 			//{

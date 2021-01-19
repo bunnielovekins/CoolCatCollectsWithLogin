@@ -1,20 +1,20 @@
-﻿using CoolCatCollects.Data;
-using CoolCatCollects.Data.Entities.Expenses;
+﻿using CoolCatCollects.Data.Entities.Expenses;
 using CoolCatCollects.Data.Repositories;
 using CoolCatCollects.Models.Expenses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace CoolCatCollects.Services
 {
-	public class ExpensesService
+	public class ExpensesService : IDisposable, IExpensesService
 	{
-		public BaseRepository<Expense> _repo;
+		public IBaseRepository<Expense> _repo;
 
-		public ExpensesService(EfContext context)
+		public ExpensesService(IBaseRepository<Expense> repo)
 		{
-			_repo = new BaseRepository<Expense>(context);
+			_repo = repo;
 		}
 
 		public async Task<IEnumerable<ExpenseModel>> GetAll()

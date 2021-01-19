@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CoolCatCollects.Data.Repositories
 {
-	public class OrderRepository : BaseRepository<Order>
+	public class OrderRepository : BaseRepository<Order>, IOrderRepository
 	{
 		public OrderRepository(EfContext context) : base(context)
 		{
@@ -36,7 +36,7 @@ namespace CoolCatCollects.Data.Repositories
 			foreach (var item in orderItemEntities)
 			{
 				if (item.Part != null)
-				{ 
+				{
 					item.Part = _ctx.PartInventorys.Attach(item.Part);
 				}
 

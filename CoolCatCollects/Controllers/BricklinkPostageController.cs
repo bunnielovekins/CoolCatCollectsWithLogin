@@ -11,13 +11,13 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-	public class BricklinkPostageController : BaseController
+	public class BricklinkPostageController : Controller
 	{
-		private readonly BricklinkService _service;
+		private readonly IBricklinkService _service;
 
-		public BricklinkPostageController()
+		public BricklinkPostageController(IBricklinkService service)
 		{
-			_service = new BricklinkService(DbContext);
+			_service = service;
 		}
 
 		public ActionResult Index()

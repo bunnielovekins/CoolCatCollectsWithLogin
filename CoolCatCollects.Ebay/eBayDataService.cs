@@ -10,15 +10,15 @@ namespace CoolCatCollects.Ebay
 	/// <summary>
 	/// Class to deal with ebay stuff in the DB
 	/// </summary>
-	public class eBayDataService
+	public class eBayDataService : IeBayDataService
 	{
-		private readonly OrderRepository _orderRepo;
-		private readonly BaseRepository<EbayOrderItem> _orderItemRepo;
+		private readonly IOrderRepository _orderRepo;
+		private readonly IBaseRepository<EbayOrderItem> _orderItemRepo;
 
-		public eBayDataService(EfContext context)
+		public eBayDataService(IOrderRepository orderRepo, IBaseRepository<EbayOrderItem> orderItemRepo)
 		{
-			_orderRepo = new OrderRepository(context);
-			_orderItemRepo = new BaseRepository<EbayOrderItem>(context);
+			_orderRepo = orderRepo;
+			_orderItemRepo = orderItemRepo;
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace CoolCatCollects.Ebay
 		{
 			var items = _orderItemRepo.Find(x => x.LegacyItemId == legacyItemId && x.LegacyVariationId == legacyVariationId);
 
-			foreach(var item in items)
+			foreach (var item in items)
 			{
 				item.Image = model.Image;
 				item.CharacterName = model.Character;

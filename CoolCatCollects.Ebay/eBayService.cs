@@ -11,15 +11,15 @@ namespace CoolCatCollects.Ebay
 	/// <summary>
 	/// Top-level service for everything ebay related
 	/// </summary>
-	public class eBayService
+	public class eBayService : IeBayService
 	{
-		private readonly eBayApiService _service;
-		private readonly eBayDataService _dataService;
+		private readonly IeBayApiService _service;
+		private readonly IeBayDataService _dataService;
 
-		public eBayService(EfContext context)
+		public eBayService(IeBayApiService service, IeBayDataService dataService)
 		{
-			_service = new eBayApiService();
-			_dataService = new eBayDataService(context);
+			_service = service;
+			_dataService = dataService;
 		}
 
 		/// <summary>

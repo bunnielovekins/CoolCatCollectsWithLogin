@@ -3,7 +3,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-	public class DatabaseController : BaseController
+	public class DataController : Controller
 	{
 		// GET: Database
 		//public ActionResult Index()
@@ -17,7 +17,7 @@ namespace CoolCatCollects.Controllers
 
 		//public ActionResult UpdateInventory(int colourId)
 		//{
-		//	var service = new BricklinkService(DbContext);
+		//	var service = service;
 
 		//	var errors = service.UpdateInventoryForColour(colourId);
 
@@ -39,7 +39,7 @@ namespace CoolCatCollects.Controllers
 
 		//public ActionResult GetAllOrders()
 		//{
-		//	var service = new BricklinkService(DbContext);
+		//	var service = service;
 
 		//	var orders = service.GetOrdersNotInDb();
 
@@ -48,7 +48,7 @@ namespace CoolCatCollects.Controllers
 
 		//public ActionResult AddOrder(string orderId)
 		//{
-		//	var service = new BricklinkService(DbContext);
+		//	var service = service;
 
 		//	try
 		//	{

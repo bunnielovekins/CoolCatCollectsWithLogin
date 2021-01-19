@@ -9,13 +9,13 @@ using Microsoft.Ajax.Utilities;
 
 namespace CoolCatCollects.Controllers
 {
-	public class LogsController : BaseController
+	public class LogsController : Controller
 	{
-		private LogService _logService;
+		private ILogService _logService;
 
-		public LogsController()
+		public LogsController(ILogService service)
 		{
-			_logService = new LogService(DbContext);
+			_logService = service;
 		}
 
 		// GET: Logs

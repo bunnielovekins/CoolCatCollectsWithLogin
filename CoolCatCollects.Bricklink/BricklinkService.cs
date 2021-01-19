@@ -14,17 +14,17 @@ namespace CoolCatCollects.Bricklink
 	/// <summary>
 	/// Top-level class that deals with BL
 	/// </summary>
-	public class BricklinkService
+	public class BricklinkService : IBricklinkService
 	{
-		private readonly BricklinkApiService _apiService;
-		private readonly BricklinkDataService _dataService;
-		private readonly ColourService _colourService;
+		private readonly IBricklinkApiService _apiService;
+		private readonly IBricklinkDataService _dataService;
+		private readonly IColourService _colourService;
 
-		public BricklinkService(EfContext context)
+		public BricklinkService(IBricklinkApiService apiService, IBricklinkDataService dataService, IColourService colourService)
 		{
-			_colourService = new ColourService(context);
-			_apiService = new BricklinkApiService(_colourService);
-			_dataService = new BricklinkDataService(context);
+			_colourService = colourService;
+			_apiService = apiService;
+			_dataService = dataService;
 		}
 
 		/// <summary>

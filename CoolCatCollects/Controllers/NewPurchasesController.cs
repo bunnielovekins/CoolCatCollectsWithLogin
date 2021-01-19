@@ -7,15 +7,16 @@ using CoolCatCollects.Bricklink;
 
 namespace CoolCatCollects.Controllers
 {
-	public class NewPurchasesController : BaseController
+	public class NewPurchasesController : Controller
 	{
-		private NewPurchaseService _service;
+		private INewPurchaseService _service;
+		private readonly IBricklinkService _blService;
 		private const string _bindAll = "Id,Date,SetNumber,SetName,Theme,Promotions,Price,UnitPrice,Quantity,Parts,TotalParts,PriceToPartOutRatio,Source,PaymentMethod,AveragePartOutValue,MyPartOutValue,ExpectedGrossProfit,ExpectedNetProfit,Status,SellingNotes,Notes,MinifigureValue,Receipt";
 
-		public NewPurchasesController()
+		public NewPurchasesController(INewPurchaseService service, IBricklinkService blService)
 		{
-			_service = new NewPurchaseService(DbContext);
-
+			_service = service;
+			_blService = blService;
 		}
 
 		// GET: NewPurchases
@@ -109,20 +110,18 @@ namespace CoolCatCollects.Controllers
 			return RedirectToAction("Index");
 		}
 
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				_service.Dispose();
-			}
-			base.Dispose(disposing);
-		}
+		//protected override void Dispose(bool disposing)
+		//{
+		//	if (disposing)
+		//	{
+		//		_service.Dispose();
+		//	}
+		//	base.Dispose(disposing);
+		//}
 
 		public ActionResult GetSetInfo(string set)
 		{
-			var service = new BricklinkService(DbContext);
-
-			return Json(service.GetSetDetails(set), JsonRequestBehavior.AllowGet);
+			return Json(_blService.GetSetDetails(set), JsonRequestBehavior.AllowGet);
 		}
 	}
 }

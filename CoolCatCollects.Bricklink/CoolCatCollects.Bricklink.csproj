@@ -65,6 +65,11 @@
     <Compile Include="BricklinkInventorySanityCheckService.cs" />
     <Compile Include="BricklinkService.cs" />
     <Compile Include="ColourService.cs" />
+    <Compile Include="Interfaces\IColourService.cs" />
+    <Compile Include="Interfaces\IBricklinkService.cs" />
+    <Compile Include="Interfaces\IBricklinkInventorySanityCheckService.cs" />
+    <Compile Include="Interfaces\IBricklinkDataService.cs" />
+    <Compile Include="Interfaces\IBricklinkApiService.cs" />
     <Compile Include="Models\ColourModel.cs" />
     <Compile Include="Models\OrderWithItemsModel.cs" />
     <Compile Include="Models\PartModel.cs" />

@@ -6,14 +6,14 @@ using CoolCatCollects.Models.Expenses;
 
 namespace CoolCatCollects.Controllers
 {
-	public class ExpensesController : BaseController
+	public class ExpensesController : Controller
 	{
-		private ExpensesService _service;
+		private IExpensesService _service;
 		private const string _bindAll = "Id,Date,TaxCategory,Category,Amount,Source,Item,Quantity,ExpenditureType,OrderNumber,Price,Postage,Receipt,Notes";
 
-		public ExpensesController()
+		public ExpensesController(IExpensesService service)
 		{
-			_service = new ExpensesService(DbContext);
+			_service = service;
 		}
 
 		// GET: Expenses

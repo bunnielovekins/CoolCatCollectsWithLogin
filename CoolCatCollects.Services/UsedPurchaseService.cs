@@ -1,5 +1,4 @@
-﻿using CoolCatCollects.Data;
-using CoolCatCollects.Data.Entities.Purchases;
+﻿using CoolCatCollects.Data.Entities.Purchases;
 using CoolCatCollects.Data.Repositories;
 using CoolCatCollects.Models;
 using System;
@@ -9,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace CoolCatCollects.Services
 {
-	public class UsedPurchaseService : IDisposable
+	public class UsedPurchaseService : IDisposable, IUsedPurchaseService
 	{
-		public BaseRepository<UsedPurchase> _repo;
-		public BaseRepository<UsedPurchaseWeight> _weightRepo;
-		public BaseRepository<UsedPurchaseBLUpload> _blUploadRepo;
+		public IBaseRepository<UsedPurchase> _repo;
+		public IBaseRepository<UsedPurchaseWeight> _weightRepo;
+		public IBaseRepository<UsedPurchaseBLUpload> _blUploadRepo;
 
-		public UsedPurchaseService(EfContext context)
+		public UsedPurchaseService(IBaseRepository<UsedPurchase> repo, IBaseRepository<UsedPurchaseWeight> weightRepo, IBaseRepository<UsedPurchaseBLUpload> blUploadRepo)
 		{
-			_weightRepo = new BaseRepository<UsedPurchaseWeight>(context);
-			_blUploadRepo = new BaseRepository<UsedPurchaseBLUpload>(context);
-			_repo = new BaseRepository<UsedPurchase>(context);
+			_weightRepo = weightRepo;
+			_blUploadRepo = blUploadRepo;
+			_repo = repo;
 		}
 
 		public async Task<IEnumerable<UsedPurchaseModel>> GetAll()

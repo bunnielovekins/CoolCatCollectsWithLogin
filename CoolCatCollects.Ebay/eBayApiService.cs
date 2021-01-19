@@ -10,7 +10,7 @@ namespace CoolCatCollects.Ebay
 	/// <summary>
 	/// Service for contacting ebay API
 	/// </summary>
-	public class eBayApiService
+	public class eBayApiService : IeBayApiService
 	{
 		private const string ContentType = "application/x-www-form-urlencoded";
 		private const string RefreshToken = "v^1.1#i^1#p^3#r^1#I^3#f^0#t^Ul4xMF84OjgxNTA5MDlBRUM0Njk5Rjk4RUQ4NjBGNTNDMkQ1MTZGXzBfMSNFXjI2MA==";

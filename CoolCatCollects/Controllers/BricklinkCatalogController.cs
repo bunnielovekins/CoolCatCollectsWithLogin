@@ -8,13 +8,13 @@ using System.Xml.Serialization;
 
 namespace CoolCatCollects.Controllers
 {
-	public class BricklinkCatalogController : BaseController
+	public class BricklinkCatalogController : Controller
 	{
-		private readonly BricklinkService _service;
+		private readonly IBricklinkService _service;
 
-		public BricklinkCatalogController()
+		public BricklinkCatalogController(IBricklinkService service)
 		{
-			_service = new BricklinkService(DbContext);
+			_service = service;
 		}
 
 		public ActionResult Index()

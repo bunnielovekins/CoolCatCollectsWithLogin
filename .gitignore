@@ -7,8 +7,6 @@ CoolCatCollects.Core/obj/
 CoolCatCollects.Data/bin/
 CoolCatCollects.Data/obj/
 CoolCatCollects.Ebay/bin/
-CoolCatCollects.Ebay/obj/Debug/.NETFramework,Version=v4.8.AssemblyAttributes.cs
-CoolCatCollects.Ebay/obj/Debug/CoolCatCollects.Ebay.csproj.CopyComplete
 CoolCatCollects.Ebay/obj/
 CoolCatCollects.Login/bin/
 CoolCatCollects.Login/obj/

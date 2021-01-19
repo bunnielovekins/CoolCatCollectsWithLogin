@@ -1,5 +1,4 @@
-﻿using CoolCatCollects.Data;
-using CoolCatCollects.Data.Entities;
+﻿using CoolCatCollects.Data.Entities;
 using CoolCatCollects.Data.Repositories;
 using CoolCatCollects.Models;
 using System;
@@ -9,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace CoolCatCollects.Services
 {
-	public class LogService : IDisposable
+	public class LogService : IDisposable, ILogService
 	{
-		public BaseRepository<Log> _repo;
+		public IBaseRepository<Log> _repo;
 
-		public LogService(EfContext context)
+		public LogService(IBaseRepository<Log> repo)
 		{
-			_repo = new BaseRepository<Log>(context);
+			_repo = repo;
 		}
 
 		public async Task<IEnumerable<LogModel>> GetAll()

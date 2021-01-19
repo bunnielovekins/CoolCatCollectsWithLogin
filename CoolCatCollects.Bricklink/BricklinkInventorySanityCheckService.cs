@@ -1,5 +1,4 @@
-﻿using CoolCatCollects.Data;
-using CoolCatCollects.Data.Entities;
+﻿using CoolCatCollects.Data.Entities;
 using CoolCatCollects.Data.Repositories;
 using CoolCatCollects.Models.Parts;
 using System;
@@ -8,28 +7,27 @@ using System.Linq;
 
 namespace CoolCatCollects.Bricklink
 {
-	public class BricklinkInventorySanityCheckService
+	public class BricklinkInventorySanityCheckService : IBricklinkInventorySanityCheckService
 	{
-		private readonly BricklinkApiService _apiService;
-		private readonly BricklinkDataService _dataService;
-		private readonly PartInventoryRepository _partInventoryRepo;
-		private readonly BaseRepository<Part> _partrepo;
-		private readonly BaseRepository<PartPriceInfo> _partPricingRepo;
-		private readonly BaseRepository<PartInventoryLocationHistory> _historyRepo;
-		private readonly BaseRepository<Order> _orderRepo;
-		private readonly BaseRepository<OrderItem> _orderItemRepo;
+		private readonly IBricklinkDataService _dataService;
+		private readonly IPartInventoryRepository _partInventoryRepo;
+		private readonly IBaseRepository<Part> _partrepo;
+		private readonly IBaseRepository<PartPriceInfo> _partPricingRepo;
+		private readonly IBaseRepository<PartInventoryLocationHistory> _historyRepo;
+		private readonly IBaseRepository<Order> _orderRepo;
+		private readonly IBaseRepository<OrderItem> _orderItemRepo;
 
-		public BricklinkInventorySanityCheckService(EfContext context)
+		public BricklinkInventorySanityCheckService(IBricklinkDataService dataService, IPartInventoryRepository partInventoryRepo,
+			IBaseRepository<Part> partrepo, IBaseRepository<PartPriceInfo> partPricingRepo, IBaseRepository<PartInventoryLocationHistory> historyRepo,
+			IBaseRepository<Order> orderRepo, IBaseRepository<OrderItem> orderItemRepo)
 		{
-			_apiService = new BricklinkApiService(new ColourService(context));
-			_dataService = new BricklinkDataService(context);
-
-			_partInventoryRepo = new PartInventoryRepository(context);
-			_partrepo = new BaseRepository<Part>(_partInventoryRepo.Context);
-			_partPricingRepo = new BaseRepository<PartPriceInfo>(_partInventoryRepo.Context);
-			_historyRepo = new BaseRepository<PartInventoryLocationHistory>(_partInventoryRepo.Context);
-			_orderRepo = new BaseRepository<Order>(_partInventoryRepo.Context);
-			_orderItemRepo = new BaseRepository<OrderItem>(_partInventoryRepo.Context);
+			_dataService = dataService;
+			_partInventoryRepo = partInventoryRepo;
+			_partrepo = partrepo;
+			_partPricingRepo = partPricingRepo;
+			_historyRepo = historyRepo;
+			_orderRepo = orderRepo;
+			_orderItemRepo = orderItemRepo;
 		}
 
 		#region inventory
@@ -148,7 +146,8 @@ namespace CoolCatCollects.Bricklink
 		{
 			var dupes = _orderRepo.Queryable().GroupBy(x => x.OrderId).Where(x => x.Count() > 1).Take(5).ToList();
 
-			var models = dupes.Select(x => {
+			var models = dupes.Select(x =>
+			{
 				var first = x.First();
 				return new
 				{
@@ -190,9 +189,9 @@ namespace CoolCatCollects.Bricklink
 
 		public IEnumerable<object> GetDuplicateInventoryLocations()
 		{
-			var dupes = _partInventoryRepo.Find(x => 
-				!string.IsNullOrEmpty(x.Location) && 
-				!x.Location.StartsWith("LL") && 
+			var dupes = _partInventoryRepo.Find(x =>
+				!string.IsNullOrEmpty(x.Location) &&
+				!x.Location.StartsWith("LL") &&
 				x.Location != "INSTRUCTIONS" &&
 				!x.Location.StartsWith("USED_") &&
 				!x.Location.StartsWith("SS") &&
@@ -202,8 +201,8 @@ namespace CoolCatCollects.Bricklink
 				)
 				.GroupBy(x => x.Location).Where(x => x.Count() > 1).Take(5).ToList();
 
-			var models = dupes.Select(x => new 
-			{ 
+			var models = dupes.Select(x => new
+			{
 				location = x.Key,
 				items = x.Select(FromEntity)
 			});
@@ -228,7 +227,8 @@ namespace CoolCatCollects.Bricklink
 			var olds = _partInventoryRepo.Find(x => x.LastUpdated < aMonthAgo && x.Quantity != 0).Take(5).ToList();
 			var count = 0;
 
-			olds.ForEach(inv => {
+			olds.ForEach(inv =>
+			{
 				var model = _dataService.GetPartModel(inv.InventoryId);
 				if (model != null)
 				{

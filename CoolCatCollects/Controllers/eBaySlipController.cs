@@ -6,13 +6,13 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-	public class eBaySlipController : BaseController
+	public class eBaySlipController : Controller
 	{
-		private readonly eBayService _service;
+		private readonly IeBayService _service;
 
-		public eBaySlipController()
+		public eBaySlipController(IeBayService service)
 		{
-			_service = new eBayService(DbContext);
+			_service = service;
 		}
 
 		public ActionResult List(int page = 1, int perPage = 25)
