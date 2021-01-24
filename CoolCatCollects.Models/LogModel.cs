@@ -11,6 +11,7 @@ namespace CoolCatCollects.Models
 		}
 
 		public int Id { get; set; }
+		[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
 		public DateTime Date { get; set; }
 		[Required]
 		public string Title { get; set; }

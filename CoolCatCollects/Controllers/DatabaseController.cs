@@ -1,78 +1,81 @@
-﻿
+﻿using CoolCatCollects.Bricklink;
+using CoolCatCollects.Data.Repositories;
+using CoolCatCollects.Models;
+using System;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
-	public class DataController : Controller
+	public class DatabaseController : Controller
 	{
-		// GET: Database
-		//public ActionResult Index()
-		//{
-		//	ViewBag.Title = "Database Page";
+		private readonly IInfoRepository _infoRepository;
+		private readonly IColourService _colourService;
+		private readonly IBricklinkService _service;
 
-		//	var repo = new InfoRepository();
+		public DatabaseController(IInfoRepository infoRepository, IColourService colourService, IBricklinkService service)
+		{
+			_infoRepository = infoRepository;
+			_colourService = colourService;
+			_service = service;
+		}
 
-		//	return View(new DatabaseUpdateModel(repo.GetInfo()));
-		//}
+		//GET: Database
+		public ActionResult Index()
+		{
+			ViewBag.Title = "Database Page";
 
-		//public ActionResult UpdateInventory(int colourId)
-		//{
-		//	var service = service;
+			return View(new DatabaseUpdateModel(_infoRepository.GetInfo(), _colourService.GetAll()));
+		}
 
-		//	var errors = service.UpdateInventoryForColour(colourId);
+		public ActionResult UpdateInventory(int colourId)
+		{
+			var errors = _service.UpdateInventoryForColour(colourId);
 
-		//	return Json(new { success = errors.Any(), errors = errors.Any() ? errors.Aggregate((current, next) => current + ", " + next) : "" }, JsonRequestBehavior.AllowGet);
-		//}
+			return Json(new { success = errors.Any(), errors = errors.Any() ? errors.Aggregate((current, next) => current + ", " + next) : "" }, JsonRequestBehavior.AllowGet);
+		}
 
-		//public ActionResult UpdateInventoryDone()
-		//{
-		//	var repo = new InfoRepository();
+		public ActionResult UpdateInventoryDone()
+		{
+			var info = _infoRepository.GetInfo();
 
-		//	var info = repo.GetInfo();
+			info.InventoryLastUpdated = DateTime.Now;
 
-		//	info.InventoryLastUpdated = DateTime.Now;
+			_infoRepository.Update(info);
 
-		//	repo.Update(info);
+			return Content("");
+		}
 
-		//	return Content("");
-		//}
+		public ActionResult GetAllOrders()
+		{
+			var orders = _service.GetOrdersNotInDb();
 
-		//public ActionResult GetAllOrders()
-		//{
-		//	var service = service;
+			return Json(orders, JsonRequestBehavior.AllowGet);
+		}
 
-		//	var orders = service.GetOrdersNotInDb();
+		public ActionResult AddOrder(string orderId)
+		{
+			try
+			{
+				_service.GetOrderWithItems(orderId);
 
-		//	return Json(orders, JsonRequestBehavior.AllowGet);
-		//}
+				return Json(new { success = true, error = "" }, JsonRequestBehavior.AllowGet);
+			}
+			catch (Exception ex)
+			{
+				return Json(new { success = false, error = ex.Message }, JsonRequestBehavior.AllowGet);
+			}
+		}
 
-		//public ActionResult AddOrder(string orderId)
-		//{
-		//	var service = service;
+		public ActionResult UpdateOrdersDone()
+		{
+			var info = _infoRepository.GetInfo();
 
-		//	try
-		//	{
-		//		service.GetOrderWithItems(orderId);
+			info.OrdersLastUpdated = DateTime.Now;
 
-		//		return Json(new { success = true, error = "" }, JsonRequestBehavior.AllowGet);
-		//	}
-		//	catch(Exception ex)
-		//	{
-		//		return Json(new { success = false, error = ex.Message }, JsonRequestBehavior.AllowGet);
-		//	}
-		//}
+			_infoRepository.Update(info);
 
-		//public ActionResult UpdateOrdersDone()
-		//{
-		//	var repo = new InfoRepository();
-
-		//	var info = repo.GetInfo();
-
-		//	info.OrdersLastUpdated = DateTime.Now;
-
-		//	repo.Update(info);
-
-		//	return Content("");
-		//}
+			return Content("");
+		}
 	}
 }

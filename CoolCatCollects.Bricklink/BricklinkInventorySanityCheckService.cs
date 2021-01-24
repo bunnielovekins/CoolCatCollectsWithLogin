@@ -199,7 +199,7 @@ namespace CoolCatCollects.Bricklink
 				!x.Location.StartsWith("Pukka") &&
 				x.Quantity != 0
 				)
-				.GroupBy(x => x.Location).Where(x => x.Count() > 1).Take(5).ToList();
+				.GroupBy(x => x.Location).Where(x => x.Count() > 1).ToList();
 
 			var models = dupes.Select(x => new
 			{
