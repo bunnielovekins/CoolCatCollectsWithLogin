@@ -17,3 +17,4 @@ CoolCatCollects.Services/obj/
 CoolCatCollects/App_Data/
 CoolCatCollects/bin/
 CoolCatCollects/obj/
+*.user

@@ -53,7 +53,7 @@
 
 <button class="btn btn-warning js-reorder">Reorder table</button>
 
-@using (Html.BeginForm("ExportXmlDownload", "BricklinkCatalog", new { action = "POST" }))
+@using (Html.BeginForm("ExportXmlDownload", "BricklinkCatalog", FormMethod.Post, new { @class = "js-part-out-form" }))
 {
 	<table class="partstable table table-striped table-bordered table-hover">
 		<thead>

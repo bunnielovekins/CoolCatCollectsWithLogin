@@ -1,5 +1,5 @@
 ﻿$(function () {
-	var form = $(document.forms[0]);
+	var form = $('form.js-part-out-form');
 	var copy = form.find("#copy");
 	var output = form.find('#output');
 
