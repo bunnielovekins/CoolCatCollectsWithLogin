@@ -82,7 +82,7 @@ namespace CoolCatCollects.Ebay
 		/// <param name="model"></param>
 		public void UpdateOrderItemsByLegacyId(string legacyItemId, string legacyVariationId, GetItemModel model)
 		{
-			var items = _orderItemRepo.Find(x => x.LegacyItemId == legacyItemId && x.LegacyVariationId == legacyVariationId);
+			var items = _orderItemRepo.Find(x => x.LegacyItemId == legacyItemId && x.LegacyVariationId == legacyVariationId).ToList();
 
 			foreach (var item in items)
 			{
