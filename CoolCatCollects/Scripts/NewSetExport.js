@@ -25,6 +25,8 @@
 		op.select();
 		op.setSelectionRange(0, 99999);
 		document.execCommand("copy");
+
+		return false;
 	});
 
 	$('#setQtyApply').click(function () {
@@ -40,6 +42,8 @@
 			input.val(newVal);
 			btn.attr('data-qty', newVal);
 		});
+
+		return false;
 	});
 
 	$('#updateDb').click(function () {
@@ -56,6 +60,8 @@
 			btn.text('Uploaded!');
 			btn.removeAttr('disabled')
 		});
+
+		return false;
 	});
 
 	$('.js-break').click(function () {
@@ -88,6 +94,8 @@
 
 			RecalculateIndexes();
 		});
+
+		return false;
 	});
 
 	$('.js-reorder').click(() => {
@@ -122,6 +130,8 @@
 		});
 
 		RecalculateIndexes();
+
+		return false;
 	});
 
 	$('.js-resume-upload').click(function () {
