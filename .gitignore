@@ -18,3 +18,5 @@ CoolCatCollects/App_Data/
 CoolCatCollects/bin/
 CoolCatCollects/obj/
 *.user
+CoolCatCollects.DatabaseUpdater/bin/
+CoolCatCollects.DatabaseUpdater/obj/

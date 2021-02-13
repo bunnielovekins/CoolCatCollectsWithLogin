@@ -22,5 +22,17 @@ namespace CoolCatCollects.Models
 		public string FurtherNote { get; set; }
 		[Required]
 		public string Category { get; set; }
+
+		public static LogModel MakeLog(string title, string note, string furtherNote = "")
+		{
+			return new LogModel
+			{
+				Category = "Other",
+				Date = DateTime.Now,
+				Title = title,
+				Note = note,
+				FurtherNote = furtherNote
+			};
+		}
 	}
 }

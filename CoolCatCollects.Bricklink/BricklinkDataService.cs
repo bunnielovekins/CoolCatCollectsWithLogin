@@ -73,6 +73,25 @@ namespace CoolCatCollects.Bricklink
 			if (part.Number == null)
 			{
 				part = _api.RecoverPartFromPartInv(partInv, part);
+
+				if (part == null)
+				{
+					return new PartModel
+					{
+						Part = new Part
+						{
+							CategoryId = 0,
+							Number = "N/A",
+							Name = "Not Found"
+						},
+						PartInventory = partInv,
+						PartPriceInfo = new PartPriceInfo
+						{
+							AveragePrice = 0
+						},
+						InvIsPlaceHolder = true
+					};
+				}
 				_partrepo.Update(part);
 			}
 			else if (part.LastUpdated < DateTime.Now.AddDays(-14) || updatePart)

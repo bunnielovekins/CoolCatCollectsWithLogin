@@ -278,6 +278,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\Angular\BricklinkPostageExport.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Properties\PublishProfiles\coolcatcollects.co.uk - Web Deploy.pubxml" />
@@ -382,6 +383,7 @@
     <Content Include="Views\UsedPurchases\Edit.cshtml" />
     <Content Include="Views\UsedPurchases\EditBLUpload.cshtml" />
     <Content Include="Views\UsedPurchases\Index.cshtml" />
+    <Content Include="Views\BricklinkPostage\Old.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

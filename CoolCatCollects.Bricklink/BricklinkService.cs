@@ -435,7 +435,7 @@ namespace CoolCatCollects.Bricklink
 
 		public IEnumerable<PartModel> GetHistoriesByLocation(string location)
 		{
-			var histories = _dataService.GetHistoriesByLocation(location);
+			var histories = _dataService.GetHistoriesByLocation(location).ToList();
 
 			var models = histories.
 				Select(x => _dataService.GetPartModel(x.PartInventory, updateInv: true)).

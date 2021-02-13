@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolCatCollects.Data", "Coo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolCatCollects.Login", "CoolCatCollects.Login\CoolCatCollects.Login.csproj", "{17CA98F8-81EF-44B3-BFC5-366EEDC28C3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoolCatCollects.DatabaseUpdater", "CoolCatCollects.DatabaseUpdater\CoolCatCollects.DatabaseUpdater.csproj", "{D75902CE-872A-4464-8913-1EF6FBA3E062}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{17CA98F8-81EF-44B3-BFC5-366EEDC28C3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17CA98F8-81EF-44B3-BFC5-366EEDC28C3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17CA98F8-81EF-44B3-BFC5-366EEDC28C3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D75902CE-872A-4464-8913-1EF6FBA3E062}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75902CE-872A-4464-8913-1EF6FBA3E062}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75902CE-872A-4464-8913-1EF6FBA3E062}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75902CE-872A-4464-8913-1EF6FBA3E062}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -123,6 +123,12 @@ namespace CoolCatCollects.Bricklink
 			}
 
 			var response = GetRequest<GetInventoryResponseModel>($"inventories/{partInv.InventoryId}");
+			// TODO: What if this fails, probably delete stuff?
+
+			if (response.data == null)
+			{
+				return null;
+			}
 
 			var number = response.data.item.no;
 			var type = response.data.item.type;

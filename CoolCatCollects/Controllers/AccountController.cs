@@ -1,6 +1,7 @@
 ﻿using CoolCatCollects.Data.Entities;
 using CoolCatCollects.Login;
 using CoolCatCollects.Models;
+using CoolCatCollects.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
@@ -14,17 +15,15 @@ namespace CoolCatCollects.Controllers
 	[Authorize]
 	public class AccountController : Controller
 	{
-		private ApplicationSignInManager _signInManager;
-		private ApplicationUserManager _userManager;
+		private readonly ApplicationSignInManager _signInManager;
+		private readonly ILogService _logService;
+		private readonly ApplicationUserManager _userManager;
 
-		//public AccountController()
-		//{
-		//}
-
-		public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+		public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ILogService logService)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
+			_logService = logService;
 		}
 
 		//
@@ -50,7 +49,7 @@ namespace CoolCatCollects.Controllers
 
 			// This doesn't count login failures towards account lockout
 			// To enable password failures to trigger account lockout, change to shouldLockout: true
-			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, true, false);
 			switch (result)
 			{
 				case SignInStatus.Success:
@@ -58,7 +57,7 @@ namespace CoolCatCollects.Controllers
 				case SignInStatus.LockedOut:
 					return View("Lockout");
 				case SignInStatus.RequiresVerification:
-					return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+					return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = true });
 				case SignInStatus.Failure:
 				default:
 					ModelState.AddModelError("", "Invalid login attempt.");
@@ -176,7 +175,7 @@ namespace CoolCatCollects.Controllers
 			if (ModelState.IsValid)
 			{
 				var user = await _userManager.FindByNameAsync(model.Email);
-				if (user == null || !(await _userManager.IsEmailConfirmedAsync(user.Id)))
+				if (user == null)
 				{
 					// Don't reveal that the user does not exist or is not confirmed
 					return View("ForgotPasswordConfirmation");
@@ -184,10 +183,13 @@ namespace CoolCatCollects.Controllers
 
 				// For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
 				// Send an email with this link
-				// string code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
-				// var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-				// await _userManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-				// return RedirectToAction("ForgotPasswordConfirmation", "Account");
+				string code = await _userManager.GeneratePasswordResetTokenAsync(user.Id);
+				var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+
+				await _logService.Add(LogModel.MakeLog("Password Reset", $"Password Reset Requested by user: {user.Email}", callbackUrl));
+
+				await _userManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+				return RedirectToAction("ForgotPasswordConfirmation", "Account");
 			}
 
 			// If we got this far, something failed, redisplay form

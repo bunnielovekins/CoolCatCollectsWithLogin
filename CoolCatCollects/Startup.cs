@@ -11,13 +11,13 @@ namespace CoolCatCollects
 	{
 		public void Configuration(IAppBuilder app)
 		{
-			ConfigureAuth(app);
-
 			var container = DependencyConfig.RegisterServices();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
 			app.UseAutofacMiddleware(container);
 			app.UseAutofacMvc();
+
+			ConfigureAuth(app);
 		}
 	}
 }

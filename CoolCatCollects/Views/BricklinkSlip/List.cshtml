@@ -116,13 +116,19 @@ else
 				var id = span.attr('data-id');
 				var orderId = span.attr('data-orderid');
 
-				$.get('@Url.Action("LoadOrder", "BricklinkSlip")?id=' + id + '&orderId=' + orderId, response => {
-					tr.find('.loading').addClass('hidden');
-					tr.find('a.hidden').removeClass('hidden');
+				$.get({
+					url: '@Url.Action("LoadOrder", "BricklinkSlip")?id=' + id + '&orderId=' + orderId,
+					success: response => {
+						tr.find('.loading').addClass('hidden');
+						tr.find('a.hidden').removeClass('hidden');
 
-					nameField.text(response.name);
+						nameField.text(response.name);
 
-					resolve();
+						resolve();
+					},
+					error: (jqXHR, textStatus, errorThrown ) => {
+						resolve();
+					}
 				});
 			});
 		};

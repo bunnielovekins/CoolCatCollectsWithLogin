@@ -25,11 +25,28 @@ namespace CoolCatCollects.Controllers
 			return RedirectToAction("List");
 		}
 
-		public ActionResult List(string overrideStage = "PACKED")
+		public ActionResult List()
+		{
+			return View();
+		}
+
+		public ActionResult Old(string overrideStage = "PACKED")
 		{
 			var result = _service.GetOrders(overrideStage);
 
 			return View(result);
+		}
+
+		public ActionResult GetOrders(string overrideStage = "PACKED")
+		{
+			if (string.IsNullOrEmpty(overrideStage))
+			{
+				overrideStage = "PACKED";
+			}
+
+			var result = _service.GetOrders(overrideStage);
+
+			return Json(result.Orders, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult Export(IEnumerable<OrderModel> orders)
@@ -39,8 +56,8 @@ namespace CoolCatCollects.Controllers
 				.Select(x => {
 					var order = _service.GetOrderForCsv(x.OrderId.ToString());
 					order.Weight = x.Weight;
-					order.ServiceCode = x.ShippingMethod;
-					order.PackageSize = x.PackageSize;
+					order.ServiceCode = x.ShippingMethod.Replace("string:", "");
+					order.PackageSize = x.PackageSize.Replace("string:", "");
 					return order;
 				})
 				.OrderBy(x => x.ServiceCode)

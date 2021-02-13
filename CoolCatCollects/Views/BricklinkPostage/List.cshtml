@@ -1,88 +1,91 @@
-﻿@model CoolCatCollects.Bricklink.Models.OrdersModel
-@{
+﻿@{
 	ViewBag.Title = "Bricklink Orders for Postage";
-
-	var sizeOptions = new List<SelectListItem>
-	{
-		new SelectListItem { Text = "Large Letter", Value = "large letter" },
-		new SelectListItem { Text = "Parcel", Value = "parcel" }
-	};
-
-	var shippingMethodsDomestic = new List<SelectListItem>
-	{
-		new SelectListItem { Text = "RM 48", Value = "CRL48" },
-		new SelectListItem { Text = "RM 24", Value = "CRL24" },
-		new SelectListItem { Text = "RM 2nd Signed For", Value = "BPR2" },
-		new SelectListItem { Text = "RM 1st Signed For", Value = "BPR1" },
-		new SelectListItem { Text = "RM 1st", Value = "BPL1" },
-		new SelectListItem { Text = "RM 2nd", Value = "BPL2" },
-		new SelectListItem { Text = "Special Delivery Guaranteed by 1pm - £750", Value = "SD1" },
-		new SelectListItem { Text = "Special Delivery Guaranteed by 9am - £750", Value = "SD4" },
-		new SelectListItem { Text = "Tracked 24", Value = "TPN24" },
-		new SelectListItem { Text = "Tracked 48", Value = "TPS48" }
-	};
-
-	var shippingMethodsIntl = new List<SelectListItem>
-	{
-		new SelectListItem { Text = "Intl Standard", Value = "OLA" },
-		new SelectListItem { Text = "Intl Economy", Value = "OLS" },
-		new SelectListItem { Text = "Intl Tracked £50 comp", Value = "OTA" },
-		new SelectListItem { Text = "Intl Tracked £250 comp", Value = "OTB" },
-		new SelectListItem { Text = "Intl Tracked & Signed £50 comp", Value = "OTC" },
-		new SelectListItem { Text = "Intl Tracked & Signed £250 comp", Value = "OTD" }
-	};
-
-	SelectList GetShippingMethods(CoolCatCollects.Bricklink.Models.OrderModel model)
-	{
-		return Select(model.InternationalOrder ?
-			shippingMethodsIntl :
-			shippingMethodsDomestic, model.ShippingMethod);
-	}
-
-	SelectList Select(List<SelectListItem> items, string selected)
-	{
-		return new SelectList(items, "Value", "Text", selected);
-	}
+}
+@section styles {
+	<link href="~/Content/checkbox.css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css " rel="stylesheet" />
+	<style>
+		table thead th.sortable {
+			cursor: pointer;
+		}
+	</style>
+}
+@section scripts{
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.0/angular.min.js"></script>
+	<script src="~/Scripts/Angular/BricklinkPostageExport.js"></script>
 }
 
-<h2>Bricklink Orders for Postage</h2>
+<input type="hidden" id="overrideStage" value="@Request.QueryString["overrideStage"]" />
 
-@using (Html.BeginForm("Export", "BricklinkPostage"))
-{
-	<input type="submit" value="Export" class="btn btn-primary" />
-	<br />
-	<br />
-	<table class="table table-striped table-bordered table-hover">
-		<thead>
-			<tr>
-				<th>Selected</th>
-				<th>Order Id</th>
-				<th>Buyer Name</th>
-				<th>Total</th>
-				<th>Weight (kg)</th>
-				<th>Size</th>
-				<th>Shipping Method</th>
-			</tr>
-		</thead>
-		<tbody>
-			@for (int i = 0; i < Model.Orders.Count(); i++)
-			{
-				<tr>
-					@Html.HiddenFor(o => Model.Orders[i].OrderId)
-					<td>
-						@Html.CheckBoxFor(o => Model.Orders[i].Selected)
-					</td>
-					<td>@Model.Orders[i].OrderId</td>
-					<td>
-						@Model.Orders[i].Username<br />
-						(@HttpUtility.HtmlDecode(Model.Orders[i].RealName))
-					</td>
-					<td>@Model.Orders[i].Total</td>
-					<td style="width: 100px;">@Html.TextBoxFor(o => Model.Orders[i].Weight, new { @class = "form-control" })</td>
-					<td style="width: 150px;">@Html.DropDownListFor(o => Model.Orders[i].PackageSize, Select(sizeOptions, Model.Orders[i].PackageSize), new { @class = "form-control" })</td>
-					<td style="width: 340px;">@Html.DropDownListFor(o => Model.Orders[i].ShippingMethod, GetShippingMethods(Model.Orders[i]), new { @class = "form-control" })</td>
-				</tr>
-			}
-		</tbody>
-	</table>
-}
+<div ng-app="postageExportApp">
+	<div ng-controller="PostageExportController">
+		<h2>Bricklink Orders for Postage: {{Orders.length}}</h2>
+
+		@using (Html.BeginForm("Export", "BricklinkPostage", FormMethod.Post, new { @class = "js-form" }))
+		{
+			<button type="button" class="btn btn-primary" ng-click="SubmitForm(this)">Export</button>
+			<br />
+			<br />
+			<table ng-show="Orders.length" class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Selected</th>
+						<th class="sortable" ng-click="Order('OrderId')">
+							Order Id
+							<i ng-show="OrderProperty === 'OrderId'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+						<th class="sortable" ng-click="Order('RealName')">
+							Buyer Name
+							<i ng-show="OrderProperty === 'RealName'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+						<th class="sortable" ng-click="Order('Total')">
+							Total
+							<i ng-show="OrderProperty === 'Total'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+						<th class="sortable" ng-click="Order('Weight')">
+							Weight (kg)
+							<i ng-show="OrderProperty === 'Weight'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+						<th class="sortable" ng-click="Order('PackageSize')">
+							Size
+							<i ng-show="OrderProperty === 'PackageSize'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+						<th class="sortable" ng-click="Order('ShippingMethod')">
+							Shipping Method
+							<i ng-show="OrderProperty === 'ShippingMethod'" ng-class="{fas: true, 'fa-arrow-down': OrderReverse, 'fa-arrow-up': !OrderReverse}"></i>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="order in Orders | orderBy:OrderProperty:OrderReverse">
+						<input type="hidden" name="Orders[{{$index}}].OrderId" ng-value="order.OrderId" />
+						<td ng-click="check(order, 'Selected')" class="checkable">
+							<label class="check">
+								<input ng-click="check(order, 'Selected')" type="checkbox" name="Orders[{{$index}}].Selected" ng-model="order.Selected" value="true" />
+								<span></span>
+							</label>
+						</td>
+						<td ng-click="check(order, 'Selected')" class="checkable">{{order.OrderId}}</td>
+						<td ng-click="check(order, 'Selected')" class="checkable">{{order.Username}} <br />({{order.RealName}})</td>
+						<td ng-click="check(order, 'Selected')" class="checkable">{{order.Total}}</td>
+						<td style="width: 120px;">
+							<input type="text" class="form-control" name="Orders[{{$index}}].Weight" ng-model="order.Weight" />
+						</td>
+						<td style="width: 150px;">
+							<select ng-model="order.PackageSize" name="Orders[{{$index}}].PackageSize" class="form-control">
+								<option ng-repeat="size in SizeOptions" ng-value="size.Value">{{size.Text}}</option>
+							</select>
+						</td>
+						<td style="width: 340px;">
+							<select ng-model="order.ShippingMethod" name="Orders[{{$index}}].ShippingMethod" class="form-control">
+								<option ng-repeat="shippingMethod in GetShippingMethods(order)" ng-value="shippingMethod.Value" ng-disabled="shippingMethod.Disabled">{{shippingMethod.Text}}</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		}
+	</div>
+</div>
+
+@Html.ActionLink("Old Version of this page", "Old")
