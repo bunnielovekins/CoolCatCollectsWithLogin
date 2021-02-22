@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class UsedPurchasesController : Controller
 	{
 		private IUsedPurchaseService _service;

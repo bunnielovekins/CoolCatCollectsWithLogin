@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class DatabaseController : Controller
 	{
 		private readonly IInfoRepository _infoRepository;

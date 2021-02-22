@@ -7,6 +7,7 @@ using CoolCatCollects.Bricklink;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class NewPurchasesController : Controller
 	{
 		private INewPurchaseService _service;

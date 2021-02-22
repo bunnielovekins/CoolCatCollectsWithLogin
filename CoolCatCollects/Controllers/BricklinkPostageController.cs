@@ -11,6 +11,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class BricklinkPostageController : Controller
 	{
 		private readonly IBricklinkService _service;

@@ -9,6 +9,7 @@ using Microsoft.Ajax.Utilities;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class LogsController : Controller
 	{
 		private ILogService _logService;

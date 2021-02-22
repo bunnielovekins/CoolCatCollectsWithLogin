@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class eBaySlipController : Controller
 	{
 		private readonly IeBayService _service;

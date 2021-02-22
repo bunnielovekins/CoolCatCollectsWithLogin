@@ -4,6 +4,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class InventoryController : Controller
 	{
 		private readonly IBricklinkService _service;

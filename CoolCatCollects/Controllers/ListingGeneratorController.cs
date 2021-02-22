@@ -11,6 +11,7 @@ using System.Linq;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class ListingGeneratorController : Controller
 	{
 		// GET: ListingGenerator

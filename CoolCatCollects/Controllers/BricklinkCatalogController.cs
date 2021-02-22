@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class BricklinkCatalogController : Controller
 	{
 		private readonly IBricklinkService _service;

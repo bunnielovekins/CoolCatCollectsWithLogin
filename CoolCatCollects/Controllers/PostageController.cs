@@ -5,6 +5,7 @@ using System.Web.Mvc;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class PostageController : Controller
 	{
 		// GET: Postage

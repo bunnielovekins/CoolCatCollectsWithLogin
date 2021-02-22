@@ -6,6 +6,7 @@ using CoolCatCollects.Models.Expenses;
 
 namespace CoolCatCollects.Controllers
 {
+	[Authorize]
 	public class ExpensesController : Controller
 	{
 		private IExpensesService _service;
